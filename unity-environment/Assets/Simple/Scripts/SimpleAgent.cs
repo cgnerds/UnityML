@@ -5,24 +5,25 @@ using MLAgents;
 
 public class SimpleAgent : Agent {
 
-
+    public Bandit currentBandit;
+    public Bandit[] bandits;
 
     public override void CollectObservations()
     {
-        AddVectorObs(0);
+        var bandit = Random.Range(0, bandits.Length);
+        currentBandit = bandits[bandit];
+        AddVectorObs(bandit);
     }
 
-    public Bandit bandit;
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
-        var action = (int)vectorAction[0];
-        AddReward(bandit.PullArm(action));
-        // Done();
+        int action = (int)vectorAction[0];
+        AddReward(currentBandit.PullArm(action));
     }
 
     public override void AgentReset()
     {
-        bandit.Reset();
+        if(currentBandit) currentBandit.Reset();
     }
 
     public override void AgentOnDone()

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Bandit : MonoBehaviour {
-	public Material Gold;
-	public Material Silver;
-	public Material Bronze;
+	public SimpleArm[] arms;
 	private MeshRenderer mesh;
 	private Material reset;
 
@@ -17,28 +15,9 @@ public class Bandit : MonoBehaviour {
 
 	public int PullArm(int arm)
 	{
-		var reward = 0;
-		switch(arm)
-		{
-			case 1:
-			    mesh.material = Gold;
-				reward = 3;
-				break;
-			case 2:
-			    mesh.material = Bronze;
-				reward = 1;
-				break;
-			case 3:
-			    mesh.material = Bronze;
-				reward = 1;
-				break;
-			case 4:
-			    mesh.material = Silver;
-				reward = 2;
-				break;
-		}
-
-		return reward;
+		if(arm < 0 || arm > arms.Length) return 0;
+		mesh.material = arms[arm-1].material;
+		return arms[arm-1].rewardValue;
 	}
 
 	public void Reset()
