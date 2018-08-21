@@ -3,22 +3,37 @@ using UnityEngine;
 using System.Linq;
 using MLAgents;
 
-public class ContextualDecision : MonoBehaviour, Decision
+public class ConnectedDecision : MonoBehaviour, Decision
 {
-    public float learningRate;
+    public float learningRate = .9f;
+    public float gamma = .9f;
     public float explorationEpsilon;
-    public float[][] q;    
+    
+    private float[][] q;    
     private int lastAction, lastState; 
     private int action;
 
-    public void Start()
+    public float[][] Q
     {
-        q = new float[4][];
-        for (int i = 0; i < 4; i++)
+        get
         {
-            q[i] = new float[4];
+            if (q ==  null)
+            {
+                var connectedAcademy = Object.FindObjectOfType<ConnectedAcademy>() as ConnectedAcademy;                
+                q = new float[connectedAcademy.bandits.Length][];
+                foreach(var bandit in connectedAcademy.bandits)
+                {
+                    if (bandit.Connections.Count == 0)
+                    {
+                        q = null;
+                        return q;
+                    }
+                    q[bandit.index] = new float[bandit.Connections.Count];
+                }                
+            }
+            return q;
         }
-    }
+    }    
 
     public float[] Decide(
         List<float> vectorObs,
@@ -27,14 +42,17 @@ public class ContextualDecision : MonoBehaviour, Decision
         bool done,
         List<float> memory)
     {
-        lastAction = action-1;
-        //if (++action > 4) action = 1;
+
+        if (Q == null) return new float[] { 0 };
+
+        lastAction = action-1;        
+        var state = (int)vectorObs[0];
         if (lastAction > -1)
-        {
-            q[lastState][lastAction] = q[lastState][lastAction] + learningRate * (reward - q[lastState][lastAction]);
+        {            
+            Q[lastState][lastAction] = Q[lastState][lastAction] + learningRate * (reward + gamma * Q[state].Max()) - Q[lastState][lastAction];
         }
-        lastState = (int)vectorObs[0];
-        return DecideAction(q[lastState].ToList());
+        lastState = state;
+        return DecideAction(Q[state].ToList());
     }
 
     public float[] DecideAction(List<float> state)

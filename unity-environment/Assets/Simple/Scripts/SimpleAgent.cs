@@ -7,23 +7,22 @@ public class SimpleAgent : Agent {
 
     public Bandit currentBandit;
     public Bandit[] bandits;
-
     public override void CollectObservations()
     {
         var bandit = Random.Range(0, bandits.Length);
         currentBandit = bandits[bandit];
         AddVectorObs(bandit);
-    }
-
+    }    
+        
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
         int action = (int)vectorAction[0];
-        AddReward(currentBandit.PullArm(action));
+        if(currentBandit) AddReward(currentBandit.PullArm(action));
     }
 
     public override void AgentReset()
     {
-        if(currentBandit) currentBandit.Reset();
+        if (currentBandit) currentBandit.Reset();
     }
 
     public override void AgentOnDone()
@@ -32,9 +31,8 @@ public class SimpleAgent : Agent {
     }
 
     public Academy academy;
-    public float timeBetweenDesicionAtInference;
-    private float tiemSinceDecision;
-
+    public float timeBetweenDecisionsAtInference;
+    private float timeSinceDecision;
     public void FixedUpdate()
     {
         WaitTimeInference();
@@ -42,21 +40,20 @@ public class SimpleAgent : Agent {
 
     private void WaitTimeInference()
     {
-        if(!academy.GetIsInference())
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }
         else
         {
-            if(tiemSinceDecision >= timeBetweenDesicionAtInference)
+            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
             {
-                tiemSinceDecision = 0f;
+                timeSinceDecision = 0f;
                 RequestDecision();
             }
             else
             {
-                tiemSinceDecision += Time.fixedDeltaTime;
-
+                timeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }
