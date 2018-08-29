@@ -26,6 +26,9 @@ TagManager:
   - pyramid
   - switchOn
   - stone
+  - herbivore
+  - carnivore
+  - plant
   layers:
   - Default
   - TransparentFX

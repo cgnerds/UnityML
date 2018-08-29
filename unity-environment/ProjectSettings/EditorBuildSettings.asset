@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ML-Agents/Examples/GridWorld/Scenes/GridWorld.unity
-    guid: 7c777442467e245108558a5155153927
+    path: Assets/Terrarium/Scenes/Terrarium.unity
+    guid: f28c2b1d2d51348d48fc59ed6930c9f9
   m_configObjects: {}
